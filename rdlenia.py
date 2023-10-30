@@ -66,3 +66,6 @@ class RDLenia:
         #clipping chems. because Lenia breaks the chemical balance
         self.u=torch.clip(self.u,0.0,1.0)
         self.v=torch.clip(self.v,0.0,1.0)
+    
+    def get_current_state(self):
+        return (self.a,self.u,self.v)
