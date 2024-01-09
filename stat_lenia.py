@@ -9,9 +9,14 @@ class Stat_Lenia:
         self.queue_a=[]
         self.queue_u=[]
         self.queue_v=[]
-        self.stat={'time':[],'square_optical_flow':[],
-                   'avg_spatial_entropy':[],
-                   'stdev_spatial_entropy':[]}
+        self.stat={'time':[],
+                   'square_optical_flow_a':[],
+                   'avg_spatial_entropy_a':[],
+                   'stdev_spatial_entropy_a':[],
+                   'square_optical_flow_u':[],
+                   'avg_spatial_entropy_u':[],
+                   'stdev_spatial_entropy_u':[],
+                   }
         self.steps=0
     def update_stat(self,lenia:RDLenia):
         self.steps+=1
@@ -31,12 +36,19 @@ class Stat_Lenia:
                 self.queue_a.pop(0)
                 self.queue_u.pop(0)
                 self.queue_v.pop(0)
-            opf=self.calc_optical_flow(self.queue_a[0],self.queue_a[1],lenia.dx)
-            spe=self.calc_spatial_entropy(self.queue_a[-1],0.2,3)
+            
+            opf_a=self.calc_optical_flow(self.queue_a[0],self.queue_a[1],lenia.dx)
+            spe_a=self.calc_spatial_entropy(self.queue_a[-1],0.2,3)
+            opf_u=self.calc_optical_flow(self.queue_u[0],self.queue_u[1],lenia.dx)
+            spe_u=self.calc_spatial_entropy(self.queue_u[-1],0.2,3)
+
             self.stat['time'].append(lenia.dt*self.steps)
-            self.stat['square_optical_flow'].append(np.sum(opf*opf))
-            self.stat['avg_spatial_entropy'].append(np.mean(spe))
-            self.stat['stdev_spatial_entropy'].append(np.std(spe))
+            self.stat['square_optical_flow_a'].append(np.sum(opf_a*opf_a))
+            self.stat['avg_spatial_entropy_a'].append(np.mean(spe_a))
+            self.stat['stdev_spatial_entropy_a'].append(np.std(spe_a))
+            self.stat['square_optical_flow_u'].append(np.sum(opf_u*opf_u))
+            self.stat['avg_spatial_entropy_u'].append(np.mean(spe_u))
+            self.stat['stdev_spatial_entropy_u'].append(np.std(spe_u))
         
     def get_stat(self):
         return self.stat

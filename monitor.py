@@ -36,12 +36,13 @@ class Monitor:
         print(np.sum(sl.calc_spatial_entropy(rdl.a.numpy(),0.2,3)))
 
     def run_single_channel(self,rdl:rdlenia.RDLenia):
-        sl=stat_lenia.Stat_Lenia()
+        #sl=stat_lenia.Stat_Lenia()
         while (1):
             #pygame.surfarray.blit_array(self.screen,np.ones((600,600,3))*255)
             #self.update_screen_1_channel(torch.tensor([[[[0,0,0],[0,0,0],[0,0,0]]]]))
             #arr_old=rdl.a.numpy()[0,0,:,:]
-            rdl.step()
+            for i in range(rdl.T):
+                rdl.step()
             #arr_new=rdl.a.numpy()[0,0,:,:]
             #of=sl.calc_optical_flow(arr_old,arr_new,rdl.dx)
             #print(np.sum(of*of))

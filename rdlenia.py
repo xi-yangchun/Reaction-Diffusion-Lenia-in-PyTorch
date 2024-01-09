@@ -20,8 +20,7 @@ class RDLenia:
         self.growth_func=MathUtil().growth_func
 
         #RDSystem(GScott) preferences
-        self.u=u;self.v=v;
-        u=u.detach();v=v.detach()
+        self.u=u.detach();self.v=v.detach();
         self.Du=Du;self.Dv=Dv
         self.f=f;self.k=k;
         self.lap=torch.tensor(np.array(

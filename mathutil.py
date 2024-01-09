@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import math
+import random
 
 class MathUtil:
     def __init__(self):
@@ -33,3 +34,25 @@ class MathUtil:
         arr0=np.roll(arr,dx,axis=1)
         arr1=np.roll(arr0,dy,axis=0)
         return arr1
+    
+    def draw_filled_circle(self, array, radius ,center_x, center_y):
+        height, width = array.shape
+
+        for x in range(-radius, radius + 1):
+            for y in range(-radius, radius + 1):
+                if x**2 + y**2 <= radius**2:
+                    new_x = center_x + x
+                    new_y = center_y + y
+
+                    if 0 <= new_x < width and 0 <= new_y < height:
+                        array[new_y, new_x] = 1
+        return array
+    
+    def fill_spots(self,array:np.array,num_spots):
+        height,width=array.shape[0],array.shape[1]
+        for i in range(num_spots):
+            radius=random.randint(5,20)
+            cx=random.randint(0,width)
+            cy=random.randint(0,height)
+            array=self.draw_filled_circle(array,radius,cx,cy)
+        return array
