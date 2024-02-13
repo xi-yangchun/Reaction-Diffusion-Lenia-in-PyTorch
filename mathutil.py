@@ -56,3 +56,78 @@ class MathUtil:
             cy=random.randint(0,height)
             array=self.draw_filled_circle(array,radius,cx,cy)
         return array
+    
+    def calc_mass_avg(self,array:np.array):
+        return np.mean(array)
+    
+    def calc_mass_stdev(self,array:np.array):
+        return np.std(array)
+    
+    def rdltensor2arr(self,tsr:torch.tensor):
+        return tsr.squeeze().numpy()
+    
+    def place_creature(self,carr:np.array,tarr:torch.tensor):
+        ch=carr.shape[0]
+        cw=carr.shape[1]
+        th=tarr.shape[2]
+        tw=tarr.shape[3]
+        carr_=torch.tensor(carr)
+        tarr[0,0,th//2-ch//2:th//2+ch//2,tw//2-cw//2:tw//2+cw//2]=carr_[0:ch,0:cw]
+        return tarr
+    
+    def load_creature_from_csv(self,csv):
+        return np.loadtxt(csv,delimiter=',')
+    
+    def rle2arr(self,st):
+        DIM_DELIM={0:'', 1:'$', 2:'%', 3:'#', 4:'@A', 5:'@B', 6:'@C', 7:'@D', 8:'@E', 9:'@F'}
+        DIM=2
+        stacks = [[] for dim in range(DIM)]
+        last, count = '', ''
+        delims = list(DIM_DELIM.values())
+        st = st.rstrip('!') + DIM_DELIM[DIM-1]
+        for ch in st:
+            if ch.isdigit(): count += ch
+            elif ch in 'pqrstuvwxy@': last = ch
+            else:
+                if last+ch not in delims:
+                    self._append_stack(stacks[0], self.ch2val(last+ch)/255, count, is_repeat=True)
+                else:
+                    dim = delims.index(last+ch)
+                    for d in range(dim):
+                        self._append_stack(stacks[d+1], stacks[d], count, is_repeat=False)
+                        stacks[d] = []
+                    #print('{0}[{1}] {2}'.format(last+ch, count, [np.asarray(s).shape for s in stacks]))
+                last, count = '', ''
+        A = stacks[DIM-1]
+        max_lens = [0 for dim in range(DIM)]
+        self._recur_get_max_lens(0, A, max_lens,DIM)
+        self._recur_cubify(0, A, max_lens,DIM)
+        return np.asarray(A)
+    
+    def _append_stack(self,list1, list2, count, is_repeat=False):
+        list1.append(list2)
+        if count != '':
+            repeated = list2 if is_repeat else []
+            list1.extend([repeated] * (int(count)-1))
+
+    def ch2val(self,c):
+        if c in '.b': return 0
+        elif c == 'o': return 255
+        elif len(c) == 1: return ord(c)-ord('A')+1
+        else: return (ord(c[0])-ord('p')) * 24 + (ord(c[1])-ord('A')+25)
+    
+    def _recur_get_max_lens(self,dim, list1, max_lens,mdim):
+        max_lens[dim] = max(max_lens[dim], len(list1))
+        if dim < mdim-1:
+            for list2 in list1:
+                self._recur_get_max_lens(dim+1, list2, max_lens,mdim)
+    
+    def _recur_cubify(self,dim, list1, max_lens,mdim):
+        more = max_lens[dim] - len(list1)
+        if dim < mdim-1:
+            list1.extend([[]] * more)
+            for list2 in list1:
+                self._recur_cubify(dim+1, list2, max_lens,mdim)
+        else:
+            list1.extend([0] * more)
+    

@@ -3,3 +3,5 @@ testmath.py
 __pycache__
 result
 *.png
+images
+creature_data
