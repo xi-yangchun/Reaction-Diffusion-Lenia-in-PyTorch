@@ -72,7 +72,7 @@ class MathUtil:
         th=tarr.shape[2]
         tw=tarr.shape[3]
         carr_=torch.tensor(carr)
-        tarr[0,0,th//2-ch//2:th//2+ch//2,tw//2-cw//2:tw//2+cw//2]=carr_[0:ch,0:cw]
+        tarr[0,0,th//2-ch//2:th//2-ch//2+ch,tw//2-cw//2:tw//2-cw//2+cw]=carr_[0:ch,0:cw]
         return tarr
     
     def load_creature_from_csv(self,csv):
